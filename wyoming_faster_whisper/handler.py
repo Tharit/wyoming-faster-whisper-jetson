@@ -66,7 +66,7 @@ class FasterWhisperEventHandler(AsyncEventHandler):
             self._wav_file = None
 
             async with self.model_lock:
-                segments, _info = self.model.transcribe(
+                segments, info = self.model.transcribe(
                     self._wav_path,
                     beam_size=self.cli_args.beam_size,
                     language=self._language,
@@ -76,7 +76,7 @@ class FasterWhisperEventHandler(AsyncEventHandler):
             text = " ".join(segment.text for segment in segments)
             _LOGGER.info(text)
 
-            await self.write_event(Transcript(text=text).event())
+            await self.write_event(Transcript(text=text,language=info.language).event())
             _LOGGER.debug("Completed request")
 
             # Reset
